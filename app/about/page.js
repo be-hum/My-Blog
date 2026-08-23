@@ -5,7 +5,7 @@ import { renderBlock } from '../../components/notion/renderer';
 import Text from '../../components/text';
 import styles from '../../styles/post.module.css';
 
-export const revalidate = 3600;
+export const revalidate = 43200; // 12 hours
 
 export default async function About() {
   const page = await getPageBySlugAnyType('about');

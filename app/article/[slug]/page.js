@@ -5,6 +5,8 @@ import Text from '../../../components/text';
 import { renderBlock } from '../../../components/notion/renderer';
 import styles from '../../../styles/post.module.css';
 
+export const revalidate = 43200; // 12 hours
+
 export async function generateStaticParams() {
   return [];
 }

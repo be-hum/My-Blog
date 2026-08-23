@@ -1,5 +1,7 @@
 import { getDatabase } from '../lib/notion';
 
+export const revalidate = 43200; // 12 hours
+
 export default async function sitemap() {
   const base = 'https://computudy-note.vercel.app';
   const database = await getDatabase();

@@ -86,11 +86,15 @@ export function renderBlock(block) {
         </div>
       );
     case 'image': {
-      const src = value.type === 'external' ? value.external.url : value.file.url;
+      // Notion-hosted files use signed URLs that expire, so go through the
+      // proxy route which resolves a fresh URL on each request.
+      const src = value.type === 'external'
+        ? value.external.url
+        : `/api/notion-asset?blockId=${id}`;
       const caption = value.caption ? value.caption[0]?.plain_text : '';
       return (
         <figure>
-          <img src={src} alt={caption} />
+          <img src={src} alt={caption} loading="lazy" />
           {caption && <figcaption>{caption}</figcaption>}
         </figure>
       );
@@ -112,8 +116,12 @@ export function renderBlock(block) {
         </pre>
       );
     case 'file': {
-      const srcFile = value.type === 'external' ? value.external.url : value.file.url;
-      const splitSourceArray = srcFile.split('/');
+      const rawFileUrl = value.type === 'external' ? value.external.url : value.file.url;
+      // Same expiry problem as images — resolve Notion-hosted files at request time.
+      const srcFile = value.type === 'external'
+        ? rawFileUrl
+        : `/api/notion-asset?blockId=${id}`;
+      const splitSourceArray = rawFileUrl.split('/');
       const lastElementInArray = splitSourceArray[splitSourceArray.length - 1];
       const captionFile = value.caption ? value.caption[0]?.plain_text : '';
       return (
@@ -122,7 +130,7 @@ export function renderBlock(block) {
             📎
             {' '}
             <Link href={srcFile} passHref>
-              {lastElementInArray.split('?')[0]}
+              {decodeURIComponent(lastElementInArray.split('?')[0])}
             </Link>
           </div>
           {captionFile && <figcaption>{captionFile}</figcaption>}

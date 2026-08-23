@@ -6,6 +6,10 @@ import PostList from '../components/post-list';
 
 export const databaseId = process.env?.NOTION_DATABASE_ID ?? 'NOTION_DATABASE_ID';
 
+// 12 hours — Notion content changes rarely, and ISR serves the cached page
+// instantly while regenerating in the background.
+export const revalidate = 43200;
+
 export default async function Page() {
   const database = await getDatabase();
 
