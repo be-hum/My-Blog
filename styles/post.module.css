@@ -104,6 +104,34 @@
   margin-bottom: 10px;
 }
 
+.callout {
+  display: flex;
+  gap: 12px;
+  padding: 16px 20px;
+  margin: 24px 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.calloutIcon {
+  flex-shrink: 0;
+  line-height: 1.7;
+}
+
+.calloutBody {
+  flex: 1;
+  min-width: 0;
+}
+
+.calloutBody > *:first-child {
+  margin-top: 0;
+}
+
+.calloutBody > *:last-child {
+  margin-bottom: 0;
+}
+
 .table {
   border: 1px solid var(--border);
   border-collapse: collapse;

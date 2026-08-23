@@ -13,7 +13,7 @@ const notoSansKr = NotoSansKR({
 
 const notoSerifKr = NotoSerifKR({
   subsets: ['latin'],
-  weight: ['600', '700'],
+  weight: ['400', '600', '700'],
   variable: '--font-serif',
 });
 
@@ -42,7 +42,9 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="ko" suppressHydrationWarning>
-      <body className={`${notoSansKr.variable} ${notoSerifKr.variable} ${notoSansKr.className}`}>
+      {/* Only the CSS variables — a font's own className would override the
+          serif body font declared in globals.css. */}
+      <body className={`${notoSansKr.variable} ${notoSerifKr.variable}`}>
         <Providers>{children}</Providers>
         <Analytics />
         <Script

@@ -42,6 +42,31 @@ export function renderBlock(block) {
           <Text title={value.rich_text} />
         </h3>
       );
+    case 'heading_4':
+      return (
+        <h4>
+          <Text title={value.rich_text} />
+        </h4>
+      );
+    case 'callout':
+      return (
+        <aside className={styles.callout}>
+          {value.icon?.emoji && (
+            <span className={styles.calloutIcon}>{value.icon.emoji}</span>
+          )}
+          <div className={styles.calloutBody}>
+            <Text title={value.rich_text} />
+            {block.children?.map((child) => (
+              <Fragment key={child.id}>{renderBlock(child)}</Fragment>
+            ))}
+          </div>
+        </aside>
+      );
+    case 'synced_block':
+      // A synced block is just a container — render whatever it mirrors.
+      return block.children?.map((child) => (
+        <Fragment key={child.id}>{renderBlock(child)}</Fragment>
+      )) ?? null;
     case 'bulleted_list': {
       return <ul>{value.children.map((child) => renderBlock(child))}</ul>;
     }
@@ -177,9 +202,15 @@ export function renderBlock(block) {
       return <div>{block.children.map((child) => renderBlock(child))}</div>;
     }
     default:
-      return `❌ Unsupported block (${
-        type === 'unsupported' ? 'unsupported by Notion API' : type
-      })`;
+      // Some Notion blocks (e.g. `alias`) carry no content through the public
+      // API, so there is nothing to render. Surface it while developing only —
+      // readers shouldn't see an error string mid-article.
+      if (process.env.NODE_ENV === 'development') {
+        return `❌ Unsupported block (${
+          type === 'unsupported' ? `unsupported by Notion API: ${value?.block_type ?? 'unknown'}` : type
+        })`;
+      }
+      return null;
   }
 }
 

@@ -2,8 +2,9 @@ html,
 body {
   padding: 0;
   margin: 0;
-  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont,
-    'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  /* Serif for reading text, matching the headings. Form controls don't
+     inherit font-family, so search/sort/tag stay sans by default. */
+  font-family: var(--font-serif), 'Noto Serif KR', Georgia, serif;
   word-break: keep-all;
 }
 
