@@ -1,12 +1,14 @@
 import { NextResponse } from 'next/server';
-import { Client } from '@notionhq/client';
+import { notionRequest } from '../../../lib/notion';
 
 // Notion signed file URLs expire after ~1 hour, so static HTML can't hold them.
 // This route resolves a fresh URL per request and redirects to it.
 const REDIRECT_CACHE_SECONDS = 3000;
 const UUID_PATTERN = /^[0-9a-f]{8}-?[0-9a-f]{4}-?[0-9a-f]{4}-?[0-9a-f]{4}-?[0-9a-f]{12}$/i;
 
-const notion = new Client({ auth: process.env.NOTION_TOKEN });
+// Per-instance memo so repeated hits (CDN misses, other regions) don't each
+// spend a Notion API call. Entries live shorter than the signed URL does.
+const urlCache = new Map();
 
 function extractUrl(block) {
   const value = block?.[block?.type];
@@ -22,8 +24,14 @@ export async function GET(request) {
   }
 
   try {
-    const block = await notion.blocks.retrieve({ block_id: blockId });
-    const url = extractUrl(block);
+    const key = blockId.replaceAll('-', '').toLowerCase();
+    const hit = urlCache.get(key);
+    let url = hit && hit.expires > Date.now() ? hit.url : null;
+    if (!url) {
+      const block = await notionRequest((n) => n.blocks.retrieve({ block_id: blockId }));
+      url = extractUrl(block);
+      if (url) urlCache.set(key, { url, expires: Date.now() + REDIRECT_CACHE_SECONDS * 1000 });
+    }
 
     if (!url) {
       return NextResponse.json({ error: 'Asset not found' }, { status: 404 });

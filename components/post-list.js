@@ -73,7 +73,7 @@ export default function PostList({ posts }) {
         {visible.map((post) => (
           <li key={post.id} className={styles.post}>
             <h3 className={styles.postTitle}>
-              <Link href={`/article/${post.slug}`}>{post.title}</Link>
+              <Link href={`/article/${post.slug}`} prefetch={false}>{post.title}</Link>
             </h3>
             {post.summary && <p className={styles.postDescription}>{post.summary}</p>}
             <p className={styles.postMeta}>
