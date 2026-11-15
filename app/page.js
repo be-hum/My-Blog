@@ -24,7 +24,8 @@ export default async function Page() {
     summary: post.properties?.summary?.rich_text?.[0]?.plain_text ?? '',
     tags: post.properties?.tags?.multi_select?.map((t) => t.name) ?? [],
     category: post.properties?.category?.select?.name ?? '',
-    date: post.properties?.date?.date?.start ?? post.last_edited_time,
+    // Listed and sorted by last edit, so recently updated posts surface first.
+    date: post.last_edited_time,
   }));
 
   return (
