@@ -1,6 +1,6 @@
 import { getDatabase } from '../lib/notion';
 
-export const revalidate = 43200; // 12 hours
+export const revalidate = 3600; // 1 hour — new posts reach crawlers quickly
 
 export default async function sitemap() {
   const base = 'https://computudy-note.vercel.app';

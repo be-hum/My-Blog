@@ -10,6 +10,10 @@ export const databaseId = process.env?.NOTION_DATABASE_ID ?? 'NOTION_DATABASE_ID
 // instantly while regenerating in the background.
 export const revalidate = 43200;
 
+export const metadata = {
+  alternates: { canonical: '/' },
+};
+
 export default async function Page() {
   const database = await getDatabase();
 

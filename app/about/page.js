@@ -7,6 +7,11 @@ import styles from '../../styles/post.module.css';
 
 export const revalidate = 43200; // 12 hours
 
+export const metadata = {
+  title: 'About',
+  alternates: { canonical: '/about' },
+};
+
 export default async function About() {
   const page = await getPageBySlugAnyType('about');
   if (!page) return <div>준비 중입니다.</div>;
