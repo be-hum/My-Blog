@@ -4,12 +4,14 @@ import { getPageBySlugAnyType, getBlocks } from '../../lib/notion';
 import { renderBlock } from '../../components/notion/renderer';
 import Text from '../../components/text';
 import styles from '../../styles/post.module.css';
+import { SITE_NAME, buildOpenGraph } from '../../lib/site';
 
 export const revalidate = 43200; // 12 hours
 
 export const metadata = {
   title: 'About',
   alternates: { canonical: '/about' },
+  openGraph: buildOpenGraph({ title: `About | ${SITE_NAME}`, url: '/about' }),
 };
 
 export default async function About() {

@@ -4,6 +4,11 @@ import { Noto_Sans_KR as NotoSansKR, Noto_Serif_KR as NotoSerifKR } from 'next/f
 import { Analytics } from '@vercel/analytics/next';
 import Script from 'next/script';
 import Providers from '../components/providers';
+import {
+  OG_IMAGE, SITE_DESCRIPTION, SITE_NAME, SITE_URL, buildOpenGraph,
+} from '../lib/site';
+
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 
 const notoSansKr = NotoSansKR({
   subsets: ['latin'],
@@ -18,18 +23,19 @@ const notoSerifKr = NotoSerifKR({
 });
 
 export const metadata = {
-  metadataBase: new URL('https://computudy-note.vercel.app'),
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: 'COMPUTUDY NOTE',
-    template: '%s | COMPUTUDY NOTE',
+    default: SITE_NAME,
+    template: `%s | ${SITE_NAME}`,
   },
-  description: '개인 학습 노트',
-  openGraph: {
-    title: 'COMPUTUDY NOTE',
-    description: '개인 학습 노트',
-    type: 'website',
-    locale: 'ko_KR',
-    siteName: 'COMPUTUDY NOTE',
+  description: SITE_DESCRIPTION,
+  openGraph: buildOpenGraph(),
+  twitter: {
+    card: 'summary_large_image',
+    images: [OG_IMAGE.url],
+  },
+  alternates: {
+    types: { 'application/rss+xml': [{ url: '/rss.xml', title: SITE_NAME }] },
   },
   verification: {
     other: {
@@ -47,18 +53,22 @@ export default function RootLayout({ children }) {
       <body className={`${notoSansKr.variable} ${notoSerifKr.variable}`}>
         <Providers>{children}</Providers>
         <Analytics />
-        <Script
-          src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
-          strategy="afterInteractive"
-        />
-        <Script id="ga" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}');
-          `}
-        </Script>
+        {GA_ID && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+              strategy="afterInteractive"
+            />
+            <Script id="ga" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${GA_ID}');
+              `}
+            </Script>
+          </>
+        )}
       </body>
     </html>
   );

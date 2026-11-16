@@ -3,6 +3,7 @@ import { getDatabase } from '../lib/notion';
 import styles from './index.module.css';
 import ThemeToggle from '../components/theme-toggle';
 import PostList from '../components/post-list';
+import { SITE_NAME, buildOpenGraph } from '../lib/site';
 
 export const databaseId = process.env?.NOTION_DATABASE_ID ?? 'NOTION_DATABASE_ID';
 
@@ -11,7 +12,11 @@ export const databaseId = process.env?.NOTION_DATABASE_ID ?? 'NOTION_DATABASE_ID
 export const revalidate = 43200;
 
 export const metadata = {
-  alternates: { canonical: '/' },
+  alternates: {
+    canonical: '/',
+    types: { 'application/rss+xml': [{ url: '/rss.xml', title: SITE_NAME }] },
+  },
+  openGraph: buildOpenGraph({ url: '/' }),
 };
 
 export default async function Page() {

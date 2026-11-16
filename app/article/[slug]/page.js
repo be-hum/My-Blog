@@ -1,9 +1,13 @@
 import { Fragment } from 'react';
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 import { getBlocks, getDatabase, getPageFromSlug } from '../../../lib/notion';
 import Text from '../../../components/text';
 import { renderBlock } from '../../../components/notion/renderer';
 import styles from '../../../styles/post.module.css';
+import {
+  OG_IMAGE, SITE_NAME, buildOpenGraph,
+} from '../../../lib/site';
 
 export const revalidate = 43200; // 12 hours
 
@@ -21,29 +25,36 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }) {
   const slug = decodeURIComponent(params?.slug ?? '');
   const page = await getPageFromSlug(slug);
-  if (!page?.id) return { title: '글을 찾을 수 없습니다' };
+  if (!page?.id) notFound();
 
   const title = page.properties?.title?.title?.[0]?.plain_text ?? '학습일지';
   const summary = page.properties?.summary?.rich_text?.[0]?.plain_text ?? '';
+  const description = summary || `${title} - ${SITE_NAME}`;
   const tags = page.properties?.tags?.multi_select?.map((t) => t.name) ?? [];
+  const keywords = tags
+    .map((t) => t.replace(/[\p{Extended_Pictographic}\uFE0F\u200D]/gu, '').trim())
+    .filter(Boolean);
   const date = page.properties?.date?.date?.start;
 
   return {
     title,
-    description: summary,
-    keywords: tags,
+    description,
+    keywords,
     alternates: { canonical: `/article/${slug}` },
-    openGraph: {
+    openGraph: buildOpenGraph({
       title,
-      description: summary,
+      description,
       type: 'article',
+      url: `/article/${slug}`,
       publishedTime: date,
+      modifiedTime: page.last_edited_time,
       tags,
-    },
+    }),
     twitter: {
       card: 'summary_large_image',
       title,
-      description: summary,
+      description,
+      images: [OG_IMAGE.url],
     },
   };
 }
@@ -51,9 +62,9 @@ export async function generateMetadata({ params }) {
 export default async function Page({ params }) {
   const slug = decodeURIComponent(params?.slug ?? '');
   const page = await getPageFromSlug(slug);
-  if (!page?.id) return <div />;
+  if (!page?.id) notFound();
   const blocks = await getBlocks(page.id);
-  if (!blocks) return <div />;
+  if (!blocks) notFound();
 
   return (
     <article className={styles.container}>
