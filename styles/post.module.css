@@ -33,6 +33,26 @@
   word-break: keep-all;
 }
 
+.related {
+  margin: 40px 0 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  font-family: var(--font-sans), sans-serif;
+  font-size: 14px;
+}
+
+.related ul {
+  margin: 0;
+  padding-left: 18px;
+  line-height: 1.9;
+}
+
+.relatedTitle {
+  margin: 0 0 8px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
 .back {
   display: inline-block;
   margin-bottom: 20px;
